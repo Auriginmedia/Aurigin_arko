@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: aurigin-app
+    name: aurigin-arco
     runtime: node
     plan: free
     buildCommand: pnpm install && pnpm run build
