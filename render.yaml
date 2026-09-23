@@ -2,7 +2,7 @@ services:
   - type: web
     name: aurigin-app
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: pnpm install && pnpm run build
     startCommand: pnpm start
     healthCheckPath: /health
