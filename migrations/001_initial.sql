@@ -1,0 +1,11 @@
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS records(id TEXT PRIMARY KEY, kind TEXT NOT NULL, owner TEXT, version INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, data TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS records_kind_owner ON records(kind,owner);
+CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, owner TEXT NOT NULL, role TEXT NOT NULL, expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS bookings(id TEXT PRIMARY KEY, lead TEXT NOT NULL, start TEXT NOT NULL, end TEXT NOT NULL, reserved_end TEXT NOT NULL, local_day TEXT NOT NULL, status TEXT NOT NULL, event_id TEXT, meeting TEXT, idempotency TEXT UNIQUE NOT NULL, expires INTEGER, created_at TEXT NOT NULL);
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_slot ON bookings(start) WHERE status IN ('held','confirmed','pending');
+CREATE TABLE IF NOT EXISTS once_keys(key TEXT PRIMARY KEY, result TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS outbox(id TEXT PRIMARY KEY, dedupe TEXT UNIQUE NOT NULL, channel TEXT NOT NULL, destination TEXT NOT NULL, payload TEXT NOT NULL, status TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, last_error TEXT, next_attempt INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
+INSERT OR IGNORE INTO schema_migrations VALUES(1,datetime('now'));
